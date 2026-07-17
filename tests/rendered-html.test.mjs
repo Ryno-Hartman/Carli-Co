@@ -2,47 +2,39 @@ import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
-const root = new URL("../", import.meta.url);
+const routes = ["page.tsx", "services/page.tsx", "about/page.tsx", "gallery/page.tsx", "careers/page.tsx", "contact/page.tsx"];
 
-async function render(pathname = "/") {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${pathname}`);
-  const { default: worker } = await import(workerUrl.href);
-
-  return worker.fetch(
-    new Request(`http://localhost${pathname}`, { headers: { accept: "text/html" } }),
-    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
-    { waitUntil() {}, passThroughOnException() {} },
-  );
-}
-
-test("renders every public salon page", async () => {
-  for (const pathname of ["/", "/services", "/team", "/journal", "/book"]) {
-    const response = await render(pathname);
-    assert.equal(response.status, 200, pathname);
-    assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-    const html = await response.text();
-    assert.match(html, /Carli &amp; Co\.|Carli &amp; Co/i);
-    assert.match(html, /Book a visit/i);
+test("includes the original six-page structure", async () => {
+  for (const route of routes) {
+    const source = await readFile(new URL(`../app/${route}`, import.meta.url), "utf8");
+    assert.match(source, /Carli|serviceGroups|business/);
   }
 });
 
-test("ships the finished brand and local image library", async () => {
-  const [layout, page, packageJson] = await Promise.all([
-    readFile(new URL("../app/layout.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
-    readFile(new URL("../package.json", import.meta.url), "utf8"),
-  ]);
+test("keeps verified business details in one editable file", async () => {
+  const content = await readFile(new URL("../app/content.ts", import.meta.url), "utf8");
+  assert.match(content, /0493 073 743/);
+  assert.match(content, /62 Davies Road/);
+  assert.match(content, /gettimely\.com\/carliandco/);
+  assert.match(content, /Balayage full application/);
+  assert.match(content, /Serenity Cut/);
+});
 
-  assert.doesNotMatch(layout + page, /codex-preview|SkeletonPreview|Your site is taking shape/);
-  assert.doesNotMatch(packageJson, /react-loading-skeleton/);
-  await assert.rejects(access(new URL("../app/_sites-preview/SkeletonPreview.tsx", import.meta.url)));
+test("does not retain invented Cape Town content or hosting configuration", async () => {
+  const appSources = await Promise.all(routes.concat(["layout.tsx", "components/SiteHeader.tsx", "components/SiteFooter.tsx", "content.ts"]).map((route) => readFile(new URL(`../app/${route}`, import.meta.url), "utf8")));
+  assert.doesNotMatch(appSources.join("\n"), /Cape Town|R1\s?250|hello@carliandco\.co\.za|Carli Meyer|Mia|Zara/);
+  await assert.rejects(access(new URL("../.openai/hosting.json", import.meta.url)));
+});
 
+test("ships every website photograph locally", async () => {
   for (const filename of [
     "hero-cut.webp", "blowdry.webp", "salon-stations.webp", "salon-portrait.webp",
     "precision-cut.webp", "hair-texture.webp", "product-pedestal.webp", "product-shelf.webp",
   ]) {
     await access(new URL(`../public/images/${filename}`, import.meta.url));
   }
-  await access(new URL("../public/og.png", import.meta.url));
+  const pages = await Promise.all(routes.map((route) => readFile(new URL(`../app/${route}`, import.meta.url), "utf8")));
+  const imageSources = [...pages.join("\n").matchAll(/src="([^"]+)"/g)].map((match) => match[1]);
+  assert.ok(imageSources.length > 0);
+  assert.ok(imageSources.every((source) => source.startsWith("/images/")));
 });

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { business, navigation } from "../content";
 
 export function SiteFooter() {
   return (
@@ -6,34 +7,31 @@ export function SiteFooter() {
       <div className="footer-top">
         <div>
           <Link href="/" className="wordmark footer-mark" aria-label="Carli and Co home">
-            <span>Carli</span><i>&amp;</i><span>Co.</span>
+            <span>Carli</span><i>&amp;</i><span>Co</span>
           </Link>
-          <p>Considered hair, made personal.</p>
+          <p>Organic hair and beauty in Claremont, Western Australia.</p>
         </div>
         <div className="footer-links">
           <div>
             <p className="footer-label">Explore</p>
-            <Link href="/services">Services</Link>
-            <Link href="/team">Our people</Link>
-            <Link href="/journal">Journal</Link>
-            <Link href="/book">Book a visit</Link>
+            {navigation.slice(1).map((item) => <Link href={item.href} key={item.href}>{item.label}</Link>)}
           </div>
           <div>
             <p className="footer-label">Visit</p>
-            <p>Cape Town, South Africa</p>
-            <p>Tuesday — Saturday</p>
-            <a href="mailto:hello@carliandco.co.za">hello@carliandco.co.za</a>
+            <a href={business.mapsUrl}>{business.address}</a>
+            <p>Tuesday to Saturday</p>
           </div>
           <div>
-            <p className="footer-label">Follow</p>
-            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram <span aria-hidden="true">↗</span></a>
-            <a href="https://www.pinterest.com/" target="_blank" rel="noreferrer">Pinterest <span aria-hidden="true">↗</span></a>
+            <p className="footer-label">Contact</p>
+            <a href={business.phoneHref}>{business.phoneDisplay}</a>
+            <a href={`mailto:${business.email}`}>{business.email}</a>
+            <a href={business.bookingUrl}>Book online <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </div>
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} Carli &amp; Co.</p>
-        <p>Quiet luxury. Exceptional craft.</p>
+        <p>© {new Date().getFullYear()} Carli &amp; Co Organic Hair &amp; Beauty.</p>
+        <p>Claremont · WA</p>
       </div>
     </footer>
   );

@@ -1,6 +1,6 @@
-# Local image sources
+# Local mockup image sources
 
-All website photography is stored locally in this directory. The original photographs were downloaded from Unsplash and are used under the Unsplash License.
+Every photograph currently used by the website is saved in this folder and loads from a local `/images/...` path. These are stock placeholders for the mockup, not claimed as Carli & Co client work.
 
 | Local file | Photographer / source | Original |
 | --- | --- | --- |
@@ -13,4 +13,4 @@ All website photography is stored locally in this directory. The original photog
 | `product-pedestal.webp` | Ela De Pure | https://unsplash.com/photos/YVuPA2D-VpA |
 | `product-shelf.webp` | Valeriia Miller | https://unsplash.com/photos/obSR85L-LQ8 |
 
-`/public/og.png` is the original Carli & Co. social preview created specifically for this site.
+To use approved salon photography, copy the new images into this folder and either keep the existing filenames or update the corresponding path in the page file.

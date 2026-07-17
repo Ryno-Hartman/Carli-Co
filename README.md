@@ -1,98 +1,47 @@
-# vinext-starter
+# Carli & Co — local website mockup
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+This is an editable, local-only website mockup for **Carli & Co Organic Hair & Beauty**. It is not connected to a `.chatgpt.site` deployment and contains no Sites hosting configuration.
 
-## Prerequisites
+## Open it in VS Code
 
-- Node.js `>=22.13.0`
+1. Open this entire `Carli & Co` folder in VS Code.
+2. Open the VS Code terminal.
+3. Run `npm install` once.
+4. Run `npm run dev`.
+5. Visit `http://localhost:3000` in your browser.
 
-## Quick Start
+The project uses standard Next.js, React, TypeScript and CSS. No page builder or hosted editor is required.
 
-```bash
-npm install
-npm run dev
-npm run build
-```
+## Where to make changes
 
-This starter does not use `wrangler.jsonc`.
+- `app/content.ts` — business details, navigation, opening hours and the complete service menu.
+- `app/page.tsx` — homepage wording and sections.
+- `app/services/page.tsx` — services page layout.
+- `app/about/page.tsx` — about page.
+- `app/gallery/page.tsx` — gallery and the clearly labelled client-review placeholder.
+- `app/careers/page.tsx` — careers page.
+- `app/contact/page.tsx` — contact page.
+- `app/globals.css` — colours, type, spacing and all mobile/desktop styling.
+- `public/images` — every photograph used by the mockup is saved locally here.
 
-## Included Shape
+## Mobile design
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+The layout is mobile-first. On phones it includes a compact menu, horizontal service-category navigation, 48–52 px tap targets and a persistent booking button at the bottom of the screen. Desktop rules are added at wider breakpoints in `app/globals.css`.
 
-## Workspace Auth Headers
+## Content and image notes
 
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
+The business information was restored from the existing Carli & Co pages and public listing, including the Claremont address, phone number, email, hours, AUD service prices, Quiet Chair services, careers copy and current Timely booking link.
 
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
+The photographs currently in `public/images` are locally saved stock placeholders, not claimed as Carli & Co client work. Replace them with approved salon photography by keeping the same filenames, or change the image path in the relevant page. The gallery review area is intentionally labelled as a mockup note so no client testimonial is invented.
 
-Treat the full name as optional and fall back to email when it is absent:
+Reference pages:
 
-```tsx
-import { headers } from "next/headers";
+- Existing website: https://sites.google.com/ccorganicsalon.com/carliandco
+- Public business listing: https://worldguide.co.za/business/carli-co-organic-hair-beauty/
+- Existing online booking: https://bookings.gettimely.com/carliandco/bb/book
 
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
+## Useful commands
 
-  const displayName = fullName ?? email;
-  // ...
-}
-```
-
-## Optional Dispatch-Owned ChatGPT Sign-In
-
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+- `npm run dev` — preview locally while editing.
+- `npm run build` — check that the production build succeeds.
+- `npm test` — build and verify pages, business details, local images and the absence of the old hosting configuration.
